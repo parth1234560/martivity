@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        request.auth.token.role == 'admin';
+    }
+    
+    function isSeller() {
+      return isAuthenticated() && 
+        request.auth.token.role == 'seller';
+    }
+    
+    function isBuyer() {
+      return isAuthenticated() && 
+        request.auth.token.role == 'buyer';
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && 
+        request.auth.uid == userId;
+    }
+
+    // Users collection - different access based on role
+    match /users/{userId} {
+      // Admin can read/write all users
+      allow read, write: if isAdmin();
+      
+      // Users can read/write their own profile
+      allow read, write: if isOwner(userId);
+      
+      // Sellers can read buyer profiles for transactions
+      allow read: if isSeller() && 
+        resource.data.role == 'buyer';
+      
+      // Buyers can read seller profiles for product info
+      allow read: if isBuyer() && 
+        resource.data.role == 'seller';
+    }
+
+    // Products collection
+    match /products/{productId} {
+      // Admin has full access
+      allow read, write: if isAdmin();
+      
+      // Sellers can create, read, update, delete their own products
+      allow create: if isSeller() && 
+        request.resource.data.sellerId == request.auth.uid;
+      allow read, update, delete: if isSeller() && 
+        resource.data.sellerId == request.auth.uid;
+      
+      // Buyers can read all products
+      allow read: if isBuyer() || isAuthenticated();
+      
+      // Anyone can read published products
+      allow read: if resource.data.status == 'published';
+    }
+
+    // Orders collection
+    match /orders/{orderId} {
+      // Admin has full access
+      allow read, write: if isAdmin();
+      
+      // Buyers can create orders and read their own orders
+      allow create: if isBuyer() && 
+        request.resource.data.buyerId == request.auth.uid;
+      allow read: if isBuyer() && 
+        resource.data.buyerId == request.auth.uid;
+      
+      // Sellers can read orders for their products
+      allow read: if isSeller() && 
+        resource.data.sellerId == request.auth.uid;
+      
+      // Sellers can update order status
+      allow update: if isSeller() && 
+        resource.data.sellerId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'shippingInfo', 'trackingNumber']);
+    }
+
+    // Categories collection
+    match /categories/{categoryId} {
+      // Admin has full access
+      allow read, write: if isAdmin();
+      
+      // Everyone can read categories
+      allow read: if true;
+    }
+
+    // Reviews collection
+    match /reviews/{reviewId} {
+      // Admin has full access
+      allow read, write: if isAdmin();
+      
+      // Buyers can create reviews for products they purchased
+      allow create: if isBuyer() && 
+        request.resource.data.buyerId == request.auth.uid;
+      
+      // Buyers can update/delete their own reviews
+      allow update, delete: if isBuyer() && 
+        resource.data.buyerId == request.auth.uid;
+      
+      // Everyone can read reviews
+      allow read: if true;
+    }
+
+    // Admin settings collection
+    match /admin/{document=**} {
+      // Only admin can access admin settings
+      allow read, write: if isAdmin();
+    }
+
+    // Analytics collection
+    match /analytics/{document=**} {
+      // Admin can read/write analytics
+      allow read, write: if isAdmin();
+      
+      // Sellers can read their own analytics
+      allow read: if isSeller() && 
+        resource.data.sellerId == request.auth.uid;
+    }
+  }
+} 

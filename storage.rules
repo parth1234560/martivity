@@ -1,0 +1,99 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        request.auth.token.role == 'admin';
+    }
+    
+    function isSeller() {
+      return isAuthenticated() && 
+        request.auth.token.role == 'seller';
+    }
+    
+    function isBuyer() {
+      return isAuthenticated() && 
+        request.auth.token.role == 'buyer';
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && 
+        request.auth.uid == userId;
+    }
+
+    // Profile images - users can upload their own profile images
+    match /profile-images/{userId}/{fileName} {
+      allow read: if true; // Anyone can view profile images
+      allow write: if isOwner(userId) || isAdmin();
+    }
+
+    // Product images - sellers can upload for their products
+    match /product-images/{productId}/{fileName} {
+      allow read: if true; // Anyone can view product images
+      allow write: if isSeller() || isAdmin();
+    }
+
+    // Product images by seller - organized by seller ID
+    match /seller-products/{sellerId}/{productId}/{fileName} {
+      allow read: if true; // Anyone can view product images
+      allow write: if isOwner(sellerId) || isAdmin();
+    }
+
+    // Order documents - buyers and sellers can access their orders
+    match /order-documents/{orderId}/{fileName} {
+      allow read: if isAuthenticated() && 
+        (resource.metadata.buyerId == request.auth.uid || 
+         resource.metadata.sellerId == request.auth.uid || 
+         isAdmin());
+      allow write: if isAuthenticated() && 
+        (request.resource.metadata.buyerId == request.auth.uid || 
+         request.resource.metadata.sellerId == request.auth.uid || 
+         isAdmin());
+    }
+
+    // Admin files - only admin can access
+    match /admin/{fileName} {
+      allow read, write: if isAdmin();
+    }
+
+    // Analytics files - admin and sellers can access
+    match /analytics/{sellerId}/{fileName} {
+      allow read: if isAdmin() || isOwner(sellerId);
+      allow write: if isAdmin() || isOwner(sellerId);
+    }
+
+    // Public assets - anyone can read, admin can write
+    match /public/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Temporary uploads - authenticated users can upload temporarily
+    match /temp/{userId}/{fileName} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Category images - admin can manage, everyone can view
+    match /category-images/{categoryId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Banner images - admin can manage, everyone can view
+    match /banners/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Logo and branding - admin can manage, everyone can view
+    match /branding/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+} 
