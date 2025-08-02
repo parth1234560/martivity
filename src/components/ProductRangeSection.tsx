@@ -75,7 +75,7 @@ const ProductRangeSection = () => {
   ];
 
   const handleBuyNow = (productId: number) => {
-    navigate(`/buy?product=${productId}`);
+    navigate(`/purchase/${productId}`);
   };
 
   return (

@@ -142,6 +142,14 @@ const Navbar = () => {
                     <span>Seller Dashboard</span>
                   </Link>
                   <Link
+                    to="/seller-registration"
+                    className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    <Store className="h-4 w-4" />
+                    <span>Become a Seller</span>
+                  </Link>
+                  <Link
                     to="/our-story"
                     className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
                     onClick={() => setIsDropdownOpen(false)}
@@ -257,6 +265,13 @@ const Navbar = () => {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Seller Dashboard
+                </Link>
+                <Link
+                  to="/seller-registration"
+                  className="block px-4 py-2 text-gray-700 hover:text-clay-brown hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Become a Seller
                 </Link>
                 <Link
                   to="/our-story"

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Grid, List, ShoppingCart, Heart, Star } from 'lucide-react';
 
 const BuyerInterface = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -228,7 +230,10 @@ const BuyerInterface = () => {
                       <span className="text-sm text-forest-green font-medium">
                         Delivery: {product.delivery}
                       </span>
-                      <button className="bg-clay-brown hover:bg-warm-orange text-white px-6 py-2 rounded-lg transition-colors duration-300 flex items-center space-x-2">
+                      <button 
+                        onClick={() => navigate(`/purchase/${product.id}`)}
+                        className="bg-clay-brown hover:bg-warm-orange text-white px-6 py-2 rounded-lg transition-colors duration-300 flex items-center space-x-2"
+                      >
                         <ShoppingCart className="h-4 w-4" />
                         <span>Buy Now</span>
                       </button>

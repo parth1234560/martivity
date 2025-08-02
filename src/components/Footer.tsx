@@ -40,7 +40,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li><a href="/" className="text-gray-300 hover:text-handloom-yellow transition-colors duration-300">Home</a></li>
               <li><a href="/buy" className="text-gray-300 hover:text-handloom-yellow transition-colors duration-300">Shop Products</a></li>
-              <li><a href="/seller" className="text-gray-300 hover:text-handloom-yellow transition-colors duration-300">Become a Seller</a></li>
+              <li><a href="/seller-registration" className="text-gray-300 hover:text-handloom-yellow transition-colors duration-300">Become a Seller</a></li>
               <li><a href="/our-story" className="text-gray-300 hover:text-handloom-yellow transition-colors duration-300">Our Story</a></li>
               <li><a href="#" className="text-gray-300 hover:text-handloom-yellow transition-colors duration-300">Help & Support</a></li>
             </ul>

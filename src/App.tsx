@@ -4,7 +4,9 @@ import Navbar from './components/Navbar';
 import Homepage from './pages/Homepage';
 import AdminPanel from './pages/AdminPanel';
 import SellerInterface from './pages/SellerInterface';
+import SellerRegistration from './pages/SellerRegistration';
 import BuyerInterface from './pages/BuyerInterface';
+import ProductPurchase from './pages/ProductPurchase';
 import OurStory from './pages/OurStory';
 import { AuthProvider } from './components/AuthProvider';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -33,7 +35,9 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route path="/seller-registration" element={<SellerRegistration />} />
             <Route path="/buy" element={<BuyerInterface />} />
+            <Route path="/purchase/:productId" element={<ProductPurchase />} />
             <Route path="/our-story" element={<OurStory />} />
           </Routes>
         </div>

@@ -49,7 +49,7 @@ const HeroSection = () => {
             </button>
             
             <button
-              onClick={() => navigate('/seller')}
+              onClick={() => navigate('/seller-registration')}
               className="group bg-transparent border-2 border-white hover:bg-white hover:text-clay-brown text-white font-semibold px-8 py-4 rounded-full transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
             >
               <span>Become a Seller</span>
